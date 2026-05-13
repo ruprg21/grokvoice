@@ -1,0 +1,15 @@
+# Credentials — never commit
+service_account.json
+.env
+*.key
+
+# Claude Code local settings
+.claude/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Generated outputs (large binaries — regenerate with the scripts)
+*.mp3
+script1_images/
