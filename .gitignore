@@ -12,4 +12,14 @@ __pycache__/
 
 # Generated outputs (large binaries — regenerate with the scripts)
 *.mp3
+*.mp4
+*.jpg
+*.jpeg
+*.png
+
+# Image output folders
 script1_images/
+
+# Script/data folders (content files, not code)
+script naval chola - audio , images and video/
+voice and image prompts/
