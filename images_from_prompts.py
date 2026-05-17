@@ -59,19 +59,26 @@ def main():
     if not prompts_file.exists():
         raise SystemExit(f"Error: prompts file not found: {prompts_file}")
 
-    raw = prompts_file.read_text(encoding="utf-8")
+    raw = prompts_file.read_text(encoding="utf-8-sig")
     prompts = [p.strip() for p in re.split(r"^---+\s*$", raw, flags=re.MULTILINE)]
     prompts = [p for p in prompts if p]
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Found {len(prompts)} prompts — saving images to '{out_dir}'\n")
+
+    # Find next available image number to avoid overwriting existing files
+    existing = [int(f.stem.split("_")[1]) for f in out_dir.glob("image_*.jpg")
+                if len(f.stem.split("_")) > 1 and f.stem.split("_")[1].isdigit()]
+    next_num = max(existing, default=0) + 1
+
+    print(f"Found {len(prompts)} prompts — saving images to '{out_dir}' (starting at image_{next_num:02d})\n")
 
     with requests.Session() as session:
-        for i, prompt in enumerate(prompts, 1):
-            print(f"[{i}/{len(prompts)}] {prompt[:80]}...")
+        for i, prompt in enumerate(prompts, 0):
+            num = next_num + i
+            print(f"[{i+1}/{len(prompts)}] {prompt[:80]}...")
             try:
                 result   = generate_image(prompt, api_key, session)
-                img_path = out_dir / f"image_{i:02d}.jpg"
+                img_path = out_dir / f"image_{num:02d}.jpg"
                 save_image(result, img_path, session)
                 print(f"  Saved: {img_path.name} ({img_path.stat().st_size/1024:.1f} KB)\n")
             except requests.HTTPError as e:

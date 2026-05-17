@@ -131,7 +131,7 @@ Slow aerial pullback over the Strait of Malacca... | duration: 10 | aspect_ratio
 Slow cinematic zoom into the silhouetted king... | image: image_04.jpg | duration: 8 | aspect_ratio: 16:9 | resolution: 720p
 ```
 
-**Auto-numbering:** Script finds the highest existing `video_NN.mp4` in the output folder and continues from there — never overwrites.
+**Auto-numbering:** Script finds the highest existing `video_NN.mp4` in the output folder and continues from there — never overwrites. Images and videos are numbered in separate independent sequences (`image_01`, `image_02` … and `video_01`, `video_02` …). At no point should any file be overwritten.
 
 ---
 
