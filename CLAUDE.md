@@ -20,6 +20,9 @@ User: Rupesh (ruprg21@gmail.com) — GitHub: https://github.com/ruprg21/grokvoic
 | `generate_images.py` | Script file → images (uses grok-3 to craft prompts) | `python generate_images.py script1.txt` |
 | `images_from_prompts.py` | Prompts txt → images | `python images_from_prompts.py prompts.txt output_folder` |
 | `videos_from_prompts.py` | Prompts txt → videos (text-to-video or image-to-video) | `python videos_from_prompts.py prompts.txt output_folder` |
+| `linkedin_images_watcher.py` | Sheet → LinkedIn images → Drive (batch) | `python linkedin_images_watcher.py` |
+| `setup_drive_oauth.py` | One-time Drive OAuth (personal Gmail) | `python setup_drive_oauth.py` |
+| `check_linkedin_setup.py` | Verify sheet + Drive + API setup | `python check_linkedin_setup.py` |
 
 ---
 
@@ -135,6 +138,165 @@ Slow cinematic zoom into the silhouetted king... | image: image_04.jpg | duratio
 
 ---
 
+## 4. LinkedIn post images — Google Sheets + Grok + Drive
+
+**Branch:** `linkedin-grok` (LinkedIn work; do not commit directly to `main`).
+
+**Script:** `linkedin_images_watcher.py` — **batch mode** (one run, processes all eligible rows, then exits).
+
+### What it does
+
+For each approved row on tab **Image Library** (engine chosen by column **F**):
+
+**Grok styles** (`b2b_clean`, `saas_ui`, etc.):
+
+1. **grok-3** builds an image prompt from post + preset + optional **H**
+2. **grok-imagine-image-quality** generates the image
+3. Resizes to LinkedIn pixels, uploads to Drive, writes **E** + **G**
+
+**Napkin styles** (`napkin`, `diagram`, `napkin_sketch`, etc.):
+
+1. Sends post + **H** to [Napkin API](https://api.napkin.ai/) for an infographic/diagram (landscape: `height: 627` only; square: `width: 1080`)
+2. Letterbox-fits PNG to LinkedIn pixels (no crop), uploads to Drive, writes **E** + **I** + **G**
+
+### Google Sheet columns (row 1 = headers)
+
+| Col | Field | You fill? | Description |
+|-----|--------|-----------|-------------|
+| **A** | `post` | Yes | LinkedIn **caption** — not an image prompt |
+| **B** | `format` | Yes | `landscape` or `square` (case-insensitive) |
+| **C** | `approved` | Yes | `TRUE` / `YES` / `1` to include in batch |
+| **D** | `status` | Auto | `processing`, `done`, or `error: ...` |
+| **E** | `drive_file_id` | Auto | Google Drive file ID after upload |
+| **I** | `drive_url` | Auto | Drive view link (`https://drive.google.com/file/d/.../view`) |
+| **F** | `image_style` | Optional | Style preset (default `b2b_clean` if empty) |
+| **G** | `image_prompt` | Auto | Full prompt sent to image model (review/debug) |
+| **H** | `image_direction` | Optional | 1–2 sentence visual brief for this row only |
+
+**Row is processed when:** A has text, B is valid, C is approved, E is empty, D is not `done`/`processing`/previous `error`.
+
+**Retry a row:** Clear D, E, G, I; set C = `TRUE`; run batch again.
+
+### Hybrid prompt model
+
+| Column | Role |
+|--------|------|
+| **A** | What the LinkedIn post says (caption context) |
+| **F** | Default **look** — pick a preset below |
+| **H** | Optional **what to show** in the image (not the post, not a full prompt) |
+| **G** | **Output** — exact prompt used (written after each run) |
+
+**Pipeline:** grok-3 reads A + F + H → scene text → grok-imagine adds preset style suffix → resize → upload.
+
+**H examples (optional):**
+```
+Enterprise sales team at a monitor showing a CRM workspace, modern office, no readable text on screen.
+```
+
+Leave **H** empty for most rows; use **F** only.
+
+### Column F — image style presets
+
+```powershell
+python linkedin_images_watcher.py --list-styles
+```
+
+| Key | Best for |
+|-----|----------|
+| `b2b_clean` | **Default** — clean B2B LinkedIn marketing (navy/teal, uncluttered) |
+| `executive_photo` | Thought leadership, realistic office/team |
+| `gradient_abstract` | Brand-style banner, gradients, minimal shapes |
+| `saas_ui` | Product/software — device + blurred UI, no readable text |
+| `concept_metaphor` | One symbolic visual (use sparingly) |
+| `stats_visual` | Growth/metrics — abstract charts, no labels |
+
+**Aliases:** `professional`/`b2b`/`clean` → `b2b_clean`; `corporate`/`photo` → `executive_photo`; `gradient`/`abstract` → `gradient_abstract`; `saas`/`ui`/`dashboard` → `saas_ui`; `metaphor`/`concept` → `concept_metaphor`; `data`/`stats`/`analytics` → `stats_visual`. Unknown values fall back to `b2b_clean`.
+
+**Salesforce / product posts:** `saas_ui` or `b2b_clean` in F; add concrete **H** when needed.
+
+**Napkin (infographics / hub-and-spoke diagrams):**
+
+| Key | Best for |
+|-----|----------|
+| `napkin` | Default Napkin style — corporate diagram |
+| `napkin_elegant` | Elegant outline diagrams |
+| `napkin_sketch` | Hand-drawn sketch style |
+| `diagram` / `infographic` | Alias for `napkin` |
+
+Requires `NAPKIN_API_TOKEN` in `grokapi.env` (from app.napkin.ai → Account → Developers). Uses Napkin credits.
+
+**Deal Rooms-style diagram:** F = `napkin`, H = `Hub-and-spoke diagram: center Deal Room, nodes for Sales, Engineering, Factory, Integrations with arrows inward.`
+
+### LinkedIn output sizes
+
+| B format | API `aspect_ratio` | Output pixels |
+|----------|-------------------|---------------|
+| `landscape` | `16:9` | 1200 × 627 |
+| `square` | `1:1` | 1080 × 1080 |
+
+View image: column **I** (`drive_url`) or `https://drive.google.com/file/d/<FILE_ID>/view`.
+
+### Config (`linkedin_images_watcher.py`)
+
+```python
+SHEET_ID = "..."           # from sheet URL /d/<ID>/edit
+WORKSHEET_NAME = "Image Library"
+DRIVE_FOLDER_ID = "..."    # from folder URL /folders/<ID>
+DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
+```
+
+### Credentials and setup
+
+**Install:**
+```powershell
+pip install -r requirements-linkedin.txt
+```
+
+**Keys** — file `grokapi.env` (first), `.env`, or `.env.example`:
+```
+XAI_API_KEY=xai-...
+NAPKIN_API_TOKEN=...    # only for column F = napkin / diagram / infographic
+```
+Load order: `grokapi.env` → `.env` → `.env.example`.
+
+**Google Sheets** — `service_account.json` in project folder; enable **Google Sheets API**; share the spreadsheet with the service account email (**Editor**).
+
+**Google Drive (personal Gmail, no Workspace):**
+
+1. `DRIVE_AUTH = "oauth"` in `linkedin_images_watcher.py`
+2. Google Cloud: OAuth consent screen (External) + your Gmail as test user
+3. Credentials → OAuth client ID → **Desktop app** → save as `client_secret.json`
+4. Run once: `python setup_drive_oauth.py` → creates `drive_token.json`
+5. Drive folder must belong to the Google account you signed in with
+
+**Verify:**
+```powershell
+python check_linkedin_setup.py
+```
+
+**Google Workspace alternative:** `DRIVE_AUTH = "service_account"` + folder inside a **Shared Drive** with service account as Content manager (service accounts cannot upload to My Drive).
+
+### Run
+
+```powershell
+python linkedin_images_watcher.py
+```
+
+Schedule with Windows Task Scheduler if you want periodic batches.
+
+### LinkedIn known issues
+
+| Issue | Fix |
+|-------|-----|
+| `Service Accounts do not have storage quota` | Use `DRIVE_AUTH = "oauth"` + `setup_drive_oauth.py`, not My Drive via service account |
+| `SpreadsheetNotFound` / 404 on sheet | Wrong `SHEET_ID` or sheet not shared with service account |
+| No rows processed | Need A + B + C=`TRUE` + empty E; clear D if retrying |
+| Image too abstract for LinkedIn | Use `saas_ui` or `b2b_clean` in F; or **napkin** for diagrams |
+| Unknown style in F | Falls back to `b2b_clean` (Grok); check `--list-styles` |
+| Napkin errors / no token | Add `NAPKIN_API_TOKEN` to `grokapi.env` |
+
+---
+
 ## Folder Structure
 
 ```
@@ -147,6 +309,12 @@ Grok Voice api/
   watcher.py                   # Google Sheets automation (not yet tested)
   script1.txt                  # Chola dynasty narration (3 sections)
   CLAUDE.md                    # this file
+  linkedin_images_watcher.py   # LinkedIn images batch (Sheets + Drive) — see section 4
+  setup_drive_oauth.py         # Drive OAuth one-time setup
+  check_linkedin_setup.py      # LinkedIn pipeline health check
+  requirements-linkedin.txt    # deps for LinkedIn scripts
+  LINKEDIN_IMAGES.md           # pointer to section 4
+  LINKEDIN_SHEET_COLUMNS.md    # per-column input guide (good responses)
 
   script naval chola - audio , images and video/
     script-intro.txt / .mp3
@@ -177,6 +345,11 @@ python images_from_prompts.py "voice and image prompts\chola-image-prompts.txt" 
 
 # Generate videos from prompts file (text-to-video and/or image-to-video)
 python videos_from_prompts.py "voice and image prompts\chola-video-prompts.txt" "voice and image prompts"
+
+# LinkedIn images (batch) — see section 4
+python check_linkedin_setup.py
+python linkedin_images_watcher.py
+python linkedin_images_watcher.py --list-styles
 ```
 
 ---

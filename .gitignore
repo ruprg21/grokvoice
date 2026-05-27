@@ -1,6 +1,9 @@
 # Credentials — never commit
 service_account.json
+client_secret.json
+drive_token.json
 .env
+grokapi.env
 *.key
 
 # Claude Code local settings
