@@ -4,9 +4,25 @@
 Build a full YouTube content pipeline using xAI APIs: TTS voiceover, AI image generation, and AI video generation.
 User: Rupesh (ruprg21@gmail.com) — GitHub: https://github.com/ruprg21/grokvoice
 
+## Pipelines in this repo
+
+This repo holds **multiple workflows**. They share `grokapi.env` / `XAI_API_KEY` but use different scripts and outputs.
+
+| Pipeline | Branch (typical) | Scripts | Output |
+|----------|------------------|---------|--------|
+| **Chronicles of Indus — YouTube** | `main` | `generate*.py`, `images_from_prompts.py`, `videos_from_prompts.py`, `watcher.py` | MP3, JPG, MP4 in project folders |
+| **LinkedIn images** | `linkedin-grok` | `linkedin_images_watcher.py`, `setup_drive_oauth.py` | JPEG on Google Drive + sheet columns E, I, G |
+| **Notebook sketchnote** | `linkedin-grok` | `grok_notebook_sketch.py` | Local JPG in `notebook_sketches/` |
+| **X (Twitter) research** | `linkedin-grok` | `grok_x_query.py` | `.txt` reports in `x_query_outputs/` |
+
+**Quick doc index:** [SCRIPTS.md](SCRIPTS.md) (all commands) · §§1–3 YouTube · §4 LinkedIn · §5 X search · §6 notebook · [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [GROK_X_QUERY.md](GROK_X_QUERY.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
+
+**Prompt template (git):** `notebook_sketches/headless_crm_signal_prompt.txt` — style block + section copy for sketchnotes.
+
 ## Platform
 - **Python 3.14** — all scripts use Python (Node.js not installed)
-- **Auth:** Bearer token via env var `XAI_API_KEY`
+- **Auth:** Bearer token via env var `XAI_API_KEY` (file `grokapi.env` in project root; see §4 and §5)
+- **Optional:** `NAPKIN_API_TOKEN` in `grokapi.env` for LinkedIn column F = Napkin styles
 - **Key rule:** Always use `requests.Session()` — urllib gets blocked by Cloudflare on xAI endpoints
 
 ---
@@ -20,6 +36,7 @@ User: Rupesh (ruprg21@gmail.com) — GitHub: https://github.com/ruprg21/grokvoic
 | `generate_images.py` | Script file → images (uses grok-3 to craft prompts) | `python generate_images.py script1.txt` |
 | `images_from_prompts.py` | Prompts txt → images | `python images_from_prompts.py prompts.txt output_folder` |
 | `videos_from_prompts.py` | Prompts txt → videos (text-to-video or image-to-video) | `python videos_from_prompts.py prompts.txt output_folder` |
+| `watcher.py` | Google Sheet → TTS polling (YouTube; set `SHEET_ID` in script) | `python watcher.py` |
 | `linkedin_images_watcher.py` | Sheet → LinkedIn images → Drive (batch) | `python linkedin_images_watcher.py` |
 | `setup_drive_oauth.py` | One-time Drive OAuth (personal Gmail) | `python setup_drive_oauth.py` |
 | `check_linkedin_setup.py` | Verify sheet + Drive + API setup | `python check_linkedin_setup.py` |
@@ -190,18 +207,31 @@ Standalone test (no sheet): `python grok_notebook_sketch.py --prompt-file notebo
 
 **Retry a row:** Clear D, E, G, I; set C = `TRUE`; run batch again.
 
+### How the batch is triggered
+
+**Manual only** — no background polling. Run `python linkedin_images_watcher.py` once; it scans **all rows** from row 2 down and processes every row that passes the checks below, then exits.
+
+**Eligible row:** A has text · B = `landscape` or `square` · C = `TRUE`/`YES`/`1` · **E empty** · D not `done` / `processing` / `error:...`
+
+**Not required to run:** F, H, G, I (filled by script on success).
+
 ### Hybrid prompt model
 
 | Column | Role |
 |--------|------|
 | **A** | What the LinkedIn post says (caption context) |
-| **F** | Default **look** — pick a preset below |
-| **H** | Optional **what to show** in the image (not the post, not a full prompt) |
-| **G** | **Output** — exact prompt used (written after each run) |
+| **F** | Engine + **look** — Grok preset, `notebook_sketch`, or Napkin |
+| **H** | Optional brief **or** full sketchnote outline (see below) |
+| **G** | **Output** — exact prompt or Napkin content (written after each run) |
+| **I** | **Output** — Drive view URL |
 
-**Pipeline:** grok-3 reads A + F + H → scene text → grok-imagine adds preset style suffix → resize → upload.
+**Grok photo styles (`b2b_clean`, etc.):** grok-3 reads A + F + H → short scene → grok-imagine → **center-crop** resize → upload.
 
-**H examples (optional):**
+**`notebook_sketch`:** If **H** is long (≥120 chars), used as full page copy + style; else grok-3 drafts from A + H → grok-imagine → **letterbox** resize → upload.
+
+**Napkin:** post + H sent to Napkin API → **letterbox** resize (edge-matched padding) → upload.
+
+**H examples (short — for photo styles):**
 ```
 Enterprise sales team at a monitor showing a CRM workspace, modern office, no readable text on screen.
 ```
@@ -319,15 +349,24 @@ Schedule with Windows Task Scheduler if you want periodic batches.
 
 ## 5. Grok X search — live Twitter research
 
-**Script:** `grok_x_query.py` — uses Responses API + native **`x_search`** tool. Separate from LinkedIn and YouTube.
+**Script:** `grok_x_query.py` — uses `POST https://api.x.ai/v1/responses` with tool `{"type": "x_search"}`. Separate from LinkedIn and YouTube; does not write to Drive or the sheet.
 
 ```powershell
 python grok_x_query.py "What is the sentiment on X about Salesforce?"
 python grok_x_query.py --from 2026-05-01 --to 2026-05-28 "Key influencers on CRM AI"
+python grok_x_query.py --handles salesforce,Benioff "Summarize CRM AI buzz"
 python grok_x_query.py -i
+python grok_x_query.py --out x_query_outputs\my_report.txt "Your question"
 ```
 
-Each run saves a report to **`x_query_outputs/<timestamp>_<slug>.txt`**.
+| Flag | Purpose |
+|------|---------|
+| `--handles` / `--exclude` | Limit X accounts (max 20) |
+| `--from` / `--to` | Date range (YYYY-MM-DD) |
+| `--images` / `--videos` | Analyze media in posts |
+| `--model` | Default `grok-4-1-fast` or `GROK_X_MODEL` in env |
+
+Each run prints to the terminal and saves **`x_query_outputs/<timestamp>_<slug>.txt`** (gitignored).
 
 **Docs:** [GROK_X_QUERY.md](GROK_X_QUERY.md) · [xAI X Search](https://docs.x.ai/developers/tools/x-search)
 
@@ -335,13 +374,19 @@ Each run saves a report to **`x_query_outputs/<timestamp>_<slug>.txt`**.
 
 ## 6. Notebook sketchnote — standalone JPG
 
-**Script:** `grok_notebook_sketch.py` — same Grok Imagine model as LinkedIn, portrait `9:16` by default.
+**Script:** `grok_notebook_sketch.py` — `grok-imagine-image-quality`, same model as LinkedIn images. Default aspect **portrait `9:16`**.
 
 ```powershell
 python grok_notebook_sketch.py --prompt-file notebook_sketches\headless_crm_signal_prompt.txt --aspect portrait
+python grok_notebook_sketch.py --prompt-file notebook_sketches\my_prompt.txt --aspect landscape --out notebook_sketches\out.jpg
 ```
 
-Output: **`notebook_sketches/*.jpg`** (gitignored). For sheet + Drive, use F = `notebook_sketch` in section 4.
+| Item | Notes |
+|------|--------|
+| Prompt file | Must include **visual style** (notebook paper, lime `#00FF41`, panels) **and** section copy — see `headless_crm_signal_prompt.txt` |
+| Footer | Put exact footer at end + `CRITICAL — footer must be EXACTLY...` or Grok may reuse old CTA text |
+| Output JPG | `notebook_sketches/*.jpg` (gitignored) |
+| Sheet + Drive | Copy prompt into column **H**, F = `notebook_sketch`, run §4 batch |
 
 **Docs:** [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
 
@@ -371,8 +416,11 @@ Grok Voice api/
   grok_notebook_sketch.py      # standalone sketchnote JPG
   grok_x_query.py                # X research via x_search
 
-  notebook_sketches/           # sketchnote JPG output (gitignored)
+  notebook_sketches/
+    headless_crm_signal_prompt.txt  # sketchnote template (in git)
+    *.jpg                        # generated JPGs (gitignored)
   x_query_outputs/             # X research txt output (gitignored)
+  .env.example                 # key names template (no secrets)
 
   script naval chola - audio , images and video/
     script-intro.txt / .mp3

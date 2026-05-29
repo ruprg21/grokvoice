@@ -1,6 +1,8 @@
 # Grok X search queries
 
-Standalone CLI: ask Grok to research **live X (Twitter)** using xAI’s native **`x_search`** tool (Responses API). Not connected to LinkedIn images or the YouTube pipeline.
+Standalone CLI: ask Grok to research **live X (Twitter)** using xAI’s native **`x_search`** tool (`POST https://api.x.ai/v1/responses`). Not connected to LinkedIn images or the YouTube pipeline.
+
+**Also documented in:** [CLAUDE.md](CLAUDE.md) section 5 · [SCRIPTS.md](SCRIPTS.md)
 
 ## Setup
 

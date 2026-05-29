@@ -4,6 +4,8 @@ Tab: **Image Library** (see [CLAUDE.md](CLAUDE.md) section 4 for full setup).
 
 Row 1 = headers. Data starts row 2.
 
+**Related:** [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [SCRIPTS.md](SCRIPTS.md) · Prompt template: `notebook_sketches/headless_crm_signal_prompt.txt`
+
 ---
 
 ## Quick reference
@@ -17,8 +19,20 @@ Row 1 = headers. Data starts row 2.
 | E | drive_file_id | No (auto) | Must be **empty** to run |
 | F | image_style | Optional | No (default `b2b_clean`; `napkin` / `notebook_sketch` for diagrams / sketchnotes) |
 | G | image_prompt | No (auto) | — |
-| H | image_direction | Optional | No (required for best `napkin` / `notebook_sketch`) |
+| H | image_direction | Optional | No (full outline for `notebook_sketch`; recommended for `napkin`) |
 | I | drive_url | No (auto) | — (add header `drive_url` in row 1) |
+
+### How a row gets picked up
+
+The watcher runs **only when you execute** `python linkedin_images_watcher.py`. It does not watch the sheet continuously.
+
+| Must be true | Column |
+|--------------|--------|
+| Post text present | A |
+| `landscape` or `square` | B |
+| Approved | C = `TRUE` / `YES` / `1` |
+| No file yet | E empty |
+| Not blocked | D not `done`, `processing`, or `error:...` |
 
 ---
 

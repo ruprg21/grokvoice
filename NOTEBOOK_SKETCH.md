@@ -1,6 +1,8 @@
 # Notebook sketchnote images (Grok Imagine)
 
-Hand-drawn **notebook page** infographics (lime green headers, sections, bullets, CTA). Separate from Napkin diagrams and from photo-style Grok presets.
+Hand-drawn **notebook page** infographics (lime green `#00FF41` headers, lined paper, red margin, spiral binding, alternating panels, CTA footer). Separate from Napkin diagrams and from photo-style Grok presets.
+
+**Reference prompt in git:** `notebook_sketches/headless_crm_signal_prompt.txt` (style block + Headless CRM section copy).
 
 ## Two ways to run
 
@@ -33,10 +35,19 @@ python linkedin_images_watcher.py
 
 Writes **E** (file ID), **I** (view URL), **G** (full prompt). Image goes to your Drive folder.
 
+## Prompt structure (required for sketchnote look)
+
+A **content-only** outline (sections + bullets) without visual instructions often produces a **plain illustration**, not the notebook layout.
+
+Include both:
+
+1. **Visual style** — notebook paper, lime green, panels, icons, portrait layout (copy top of `headless_crm_signal_prompt.txt`).
+2. **Page content** — title, sections, footer.
+
 ## Prompt tips
 
 - Put **all section text** in **H** (or the `.txt` file for standalone).
-- Repeat exact **footer** copy at the **end** of the prompt with a `CRITICAL` line so Grok does not revert to old CTAs.
+- Repeat exact **footer** copy at the **end** with `CRITICAL — footer must be EXACTLY...` so Grok does not revert to old CTAs.
 - Dense text may have small typos — fix footer in Canva if needed.
 
 ## Visual spec (default)

@@ -2,13 +2,23 @@
 
 Project root: `Grok Voice api`. API keys in **`grokapi.env`** (not committed).
 
+Repo: https://github.com/ruprg21/grokvoice — LinkedIn / notebook / X tools on branch **`linkedin-grok`**; YouTube/Chola on **`main`**.
+
 ```powershell
 cd "c:\Users\rupesh\OneDrive\Idea AI Perplx , Cursor\Chronincles of indus\Grok Voice api"
 ```
 
+| Need | Read |
+|------|------|
+| Full API reference | [CLAUDE.md](CLAUDE.md) |
+| LinkedIn sheet columns | [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) |
+| Sketchnote prompts | [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) |
+
 ---
 
 ## Chronicles of Indus — YouTube (xAI TTS / images / video)
+
+**Typical branch:** `main`. Does not use Napkin or LinkedIn sheet.
 
 | Script | Command |
 |--------|---------|
@@ -26,6 +36,8 @@ Details: [CLAUDE.md](CLAUDE.md) sections 1–3.
 ---
 
 ## LinkedIn images — Sheet → Grok / Napkin → Drive
+
+**Typical branch:** `linkedin-grok`. **Trigger:** run script manually when rows have C=`TRUE` and E empty.
 
 | Script | Command |
 |--------|---------|
@@ -53,9 +65,9 @@ Details: [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [LINKEDIN_SHEET_COLUMNS.md]
 
 | Script | Command |
 |--------|---------|
-| `grok_notebook_sketch.py` | `python grok_notebook_sketch.py --prompt-file notebook_sketches\my_prompt.txt --aspect portrait` |
+| `grok_notebook_sketch.py` | `python grok_notebook_sketch.py --prompt-file notebook_sketches\headless_crm_signal_prompt.txt --aspect portrait` |
 
-Details: [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
+Template in git: `notebook_sketches/headless_crm_signal_prompt.txt`. Details: [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
 
 ---
 
@@ -73,13 +85,14 @@ Details: [GROK_X_QUERY.md](GROK_X_QUERY.md)
 
 ---
 
-## Output folders (gitignored)
+## Output folders
 
-| Folder | Contents |
-|--------|----------|
-| `notebook_sketches/` | Sketchnote JPGs from `grok_notebook_sketch.py` |
-| `x_query_outputs/` | X research `.txt` reports |
-| Drive folder in script | LinkedIn JPEGs from sheet batch |
+| Path | In git? | Contents |
+|------|---------|----------|
+| `notebook_sketches/*.jpg` | No (gitignored) | Sketchnote JPGs |
+| `notebook_sketches/*_prompt.txt` | Yes | Prompt templates |
+| `x_query_outputs/` | No (gitignored) | X research `.txt` reports |
+| Drive folder in script | — | LinkedIn JPEGs from sheet batch |
 
 ---
 

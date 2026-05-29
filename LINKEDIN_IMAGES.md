@@ -1,10 +1,12 @@
 # LinkedIn post images
 
-Batch pipeline: Google Sheet **Image Library** → Grok or Napkin image → resize for LinkedIn → upload to Google Drive → write file ID back to the sheet.
+Batch pipeline: Google Sheet **Image Library** → Grok or Napkin image → resize for LinkedIn → upload to Google Drive → write **E** (file ID) and **I** (view URL) back to the sheet.
 
-**Script:** `linkedin_images_watcher.py` (one run, all eligible rows, then exits)
+**Script:** `linkedin_images_watcher.py` — **manual batch** (one run, all eligible rows, then exits; no background polling).
 
-**Deeper docs:** [CLAUDE.md](CLAUDE.md) section 4 · [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [SCRIPTS.md](SCRIPTS.md)
+**GitHub:** Developed on branch `linkedin-grok` ([ruprg21/grokvoice](https://github.com/ruprg21/grokvoice)). YouTube/Chola scripts remain on `main`.
+
+**Master doc:** [CLAUDE.md](CLAUDE.md) section 4 · **Columns:** [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · **Sketchnote:** [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · **All commands:** [SCRIPTS.md](SCRIPTS.md)
 
 ---
 
@@ -68,9 +70,11 @@ python setup_drive_oauth.py
 | F | `image_style` | Optional — picks **Grok** or **Napkin** engine |
 | I | `drive_url` | Auto — clickable Drive view link (add header in row 1) |
 | G | `image_prompt` | Auto — prompt or Napkin content used |
-| H | `image_direction` | Optional — 1–2 sentence visual brief |
+| H | `image_direction` | Optional — short brief, or **full sketchnote outline** for `notebook_sketch` |
 
 **Row runs when:** A has text, B is valid, C approved, **E empty**, D not `done` / `processing` / prior `error`.
+
+**Does not read** local `.txt` files — copy `notebook_sketches\headless_crm_signal_prompt.txt` into **H** for sketchnotes.
 
 **Retry:** Clear D, E, G, I → set C = `TRUE` → run batch again.
 
@@ -159,11 +163,18 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 
 ---
 
-## Napkin sizing
+## Resize behavior
+
+| Engine | Resize |
+|--------|--------|
+| Grok photos (`b2b_clean`, `saas_ui`, …) | Center-crop to LinkedIn size |
+| `notebook_sketch` | Letterbox fit (no crop) |
+| Napkin | Letterbox fit; edge color sampled from diagram borders |
+
+## Napkin API sizing
 
 - **Landscape:** Napkin gets `height: 627` only (not `width: 1200` — that produced tall images that were cropped).
 - **Square:** Napkin gets `width: 1080`.
-- Output uses **letterbox fit** (full diagram visible; side padding uses Napkin edge color, not hard white). Grok photos still use center-crop.
 
 ## Troubleshooting
 
@@ -199,4 +210,5 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 | `setup_drive_oauth.py` | One-time Drive OAuth |
 | `requirements-linkedin.txt` | Python deps |
 | `grokapi.env` | Your API keys (local only) |
-| `notebook_sketches/` | Example prompts + local JPG output |
+| `notebook_sketches/headless_crm_signal_prompt.txt` | Sketchnote prompt template (in git) |
+| `notebook_sketches/*.jpg` | Local JPG output (gitignored) |
