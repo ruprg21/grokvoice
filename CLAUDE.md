@@ -23,6 +23,11 @@ User: Rupesh (ruprg21@gmail.com) — GitHub: https://github.com/ruprg21/grokvoic
 | `linkedin_images_watcher.py` | Sheet → LinkedIn images → Drive (batch) | `python linkedin_images_watcher.py` |
 | `setup_drive_oauth.py` | One-time Drive OAuth (personal Gmail) | `python setup_drive_oauth.py` |
 | `check_linkedin_setup.py` | Verify sheet + Drive + API setup | `python check_linkedin_setup.py` |
+| `check_linkedin_credentials.py` | Light check (API key + service account only) | `python check_linkedin_credentials.py` |
+| `grok_notebook_sketch.py` | Notebook sketchnote JPG (standalone, no sheet) | `python grok_notebook_sketch.py --prompt-file notebook_sketches\prompt.txt` |
+| `grok_x_query.py` | X sentiment / research via Grok `x_search` | `python grok_x_query.py "Your question"` |
+
+**All scripts:** [SCRIPTS.md](SCRIPTS.md)
 
 ---
 
@@ -140,9 +145,9 @@ Slow cinematic zoom into the silhouetted king... | image: image_04.jpg | duratio
 
 ## 4. LinkedIn post images — Google Sheets + Grok + Drive
 
-**Branch:** `linkedin-grok` (LinkedIn work; do not commit directly to `main`).
-
 **Script:** `linkedin_images_watcher.py` — **batch mode** (one run, processes all eligible rows, then exits).
+
+**Docs:** [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
 
 ### What it does
 
@@ -157,7 +162,15 @@ For each approved row on tab **Image Library** (engine chosen by column **F**):
 **Napkin styles** (`napkin`, `diagram`, `napkin_sketch`, etc.):
 
 1. Sends post + **H** to [Napkin API](https://api.napkin.ai/) for an infographic/diagram (landscape: `height: 627` only; square: `width: 1080`)
-2. Letterbox-fits PNG to LinkedIn pixels (no crop), uploads to Drive, writes **E** + **I** + **G**
+2. Letterbox-fits PNG to LinkedIn pixels (edge-matched padding), uploads to Drive, writes **E** + **I** + **G**
+
+**Notebook sketchnote** (`notebook_sketch` in F):
+
+1. Builds full grok-imagine prompt from **H** (long outline) or grok-3 draft from **A** + **H**
+2. Grok Imagine draws lined-notebook sketchnote (lime green headers, sections, CTA)
+3. Letterbox-fits to LinkedIn size, uploads to Drive, writes **E** + **I** + **G**
+
+Standalone test (no sheet): `python grok_notebook_sketch.py --prompt-file notebook_sketches\your_prompt.txt`
 
 ### Google Sheet columns (row 1 = headers)
 
@@ -209,8 +222,9 @@ python linkedin_images_watcher.py --list-styles
 | `saas_ui` | Product/software — device + blurred UI, no readable text |
 | `concept_metaphor` | One symbolic visual (use sparingly) |
 | `stats_visual` | Growth/metrics — abstract charts, no labels |
+| `notebook_sketch` | Notebook sketchnote — paste full outline in **H** |
 
-**Aliases:** `professional`/`b2b`/`clean` → `b2b_clean`; `corporate`/`photo` → `executive_photo`; `gradient`/`abstract` → `gradient_abstract`; `saas`/`ui`/`dashboard` → `saas_ui`; `metaphor`/`concept` → `concept_metaphor`; `data`/`stats`/`analytics` → `stats_visual`. Unknown values fall back to `b2b_clean`.
+**Aliases:** `sketchnote`/`notebook`/`headless_sketch` → `notebook_sketch`; `professional`/`b2b`/`clean` → `b2b_clean`; `corporate`/`photo` → `executive_photo`; `gradient`/`abstract` → `gradient_abstract`; `saas`/`ui`/`dashboard` → `saas_ui`; `metaphor`/`concept` → `concept_metaphor`; `data`/`stats`/`analytics` → `stats_visual`. Unknown values fall back to `b2b_clean`.
 
 **Salesforce / product posts:** `saas_ui` or `b2b_clean` in F; add concrete **H** when needed.
 
@@ -226,6 +240,10 @@ python linkedin_images_watcher.py --list-styles
 Requires `NAPKIN_API_TOKEN` in `grokapi.env` (from app.napkin.ai → Account → Developers). Uses Napkin credits.
 
 **Deal Rooms-style diagram:** F = `napkin`, H = `Hub-and-spoke diagram: center Deal Room, nodes for Sales, Engineering, Factory, Integrations with arrows inward.`
+
+**Headless CRM sketchnote:** F = `notebook_sketch`, H = full section outline (title, 6 sections, footer). Put exact footer at end of **H** with `CRITICAL` line to avoid wrong CTA text.
+
+**Layered architecture diagram** (MCP stack, platform layers): use `napkin_elegant` + **H** describing each layer; not `notebook_sketch`.
 
 ### LinkedIn output sizes
 
@@ -294,6 +312,38 @@ Schedule with Windows Task Scheduler if you want periodic batches.
 | Image too abstract for LinkedIn | Use `saas_ui` or `b2b_clean` in F; or **napkin** for diagrams |
 | Unknown style in F | Falls back to `b2b_clean` (Grok); check `--list-styles` |
 | Napkin errors / no token | Add `NAPKIN_API_TOKEN` to `grokapi.env` |
+| Notebook wrong footer text | Put exact footer at end of **H**; see [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) |
+| Sheet does not read local `.txt` | Copy prompt into column **H** (file is for `grok_notebook_sketch.py` only) |
+
+---
+
+## 5. Grok X search — live Twitter research
+
+**Script:** `grok_x_query.py` — uses Responses API + native **`x_search`** tool. Separate from LinkedIn and YouTube.
+
+```powershell
+python grok_x_query.py "What is the sentiment on X about Salesforce?"
+python grok_x_query.py --from 2026-05-01 --to 2026-05-28 "Key influencers on CRM AI"
+python grok_x_query.py -i
+```
+
+Each run saves a report to **`x_query_outputs/<timestamp>_<slug>.txt`**.
+
+**Docs:** [GROK_X_QUERY.md](GROK_X_QUERY.md) · [xAI X Search](https://docs.x.ai/developers/tools/x-search)
+
+---
+
+## 6. Notebook sketchnote — standalone JPG
+
+**Script:** `grok_notebook_sketch.py` — same Grok Imagine model as LinkedIn, portrait `9:16` by default.
+
+```powershell
+python grok_notebook_sketch.py --prompt-file notebook_sketches\headless_crm_signal_prompt.txt --aspect portrait
+```
+
+Output: **`notebook_sketches/*.jpg`** (gitignored). For sheet + Drive, use F = `notebook_sketch` in section 4.
+
+**Docs:** [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
 
 ---
 
@@ -313,8 +363,16 @@ Grok Voice api/
   setup_drive_oauth.py         # Drive OAuth one-time setup
   check_linkedin_setup.py      # LinkedIn pipeline health check
   requirements-linkedin.txt    # deps for LinkedIn scripts
-  LINKEDIN_IMAGES.md           # pointer to section 4
-  LINKEDIN_SHEET_COLUMNS.md    # per-column input guide (good responses)
+  LINKEDIN_IMAGES.md           # LinkedIn pipeline quick start
+  LINKEDIN_SHEET_COLUMNS.md    # per-column input guide
+  NOTEBOOK_SKETCH.md           # notebook sketchnote style
+  GROK_X_QUERY.md              # X search CLI
+  SCRIPTS.md                   # all run commands in one place
+  grok_notebook_sketch.py      # standalone sketchnote JPG
+  grok_x_query.py                # X research via x_search
+
+  notebook_sketches/           # sketchnote JPG output (gitignored)
+  x_query_outputs/             # X research txt output (gitignored)
 
   script naval chola - audio , images and video/
     script-intro.txt / .mp3
@@ -350,6 +408,12 @@ python videos_from_prompts.py "voice and image prompts\chola-video-prompts.txt" 
 python check_linkedin_setup.py
 python linkedin_images_watcher.py
 python linkedin_images_watcher.py --list-styles
+
+# Notebook sketchnote (local) — see section 6
+python grok_notebook_sketch.py --prompt-file notebook_sketches\headless_crm_signal_prompt.txt
+
+# X research — see section 5
+python grok_x_query.py "CRM sentiment on X this week"
 ```
 
 ---

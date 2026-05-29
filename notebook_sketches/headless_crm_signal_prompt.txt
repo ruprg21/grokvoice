@@ -1,0 +1,70 @@
+Create a tall vertical infographic in a hand-drawn notebook sketchnote style.
+Lined notebook paper background with a red margin line on the left.
+Black spiral binding along the left edge.
+
+Color palette: white background with lime green (#00FF41) as the
+accent for all section headers and highlight boxes. Black for body
+text and icons. Small hand-drawn robot and gear doodles throughout.
+
+Layout: six numbered sections in alternating left-right panels,
+connected by curved lime green arrows. Playful editorial, not corporate.
+Tall portrait format (~9:16). Sharp legible English typography.
+
+--- PAGE CONTENT (render all text below in the layout) ---
+
+TITLE (large, lime green with black outline):
+HEADLESS CRM SIGNAL
+
+Tagline (black):
+Salesforce, without living in the screens
+
+Sub-line (black, pick one line):
+APIs + AI agents + data fabric instead of endless clicks
+
+Section 1 – From UI to APIs
+Heading: Shift: UI-first → API-first
+- Salesforce work exposed as APIs and events
+- AI helpers can read and write CRM directly
+- Many tasks never touch the classic screens
+Icon: crossed-out screen with small robots
+
+Section 2 – Less clicking, more flow
+Heading: Less clicking, more orchestration
+- Repetitive admin tasks turn into background jobs
+- Screen time moves from humans to automations
+- Value lives in clean objects + reliable APIs
+Icon: gears and cloud
+
+Section 3 – New skill stack
+Heading: New toolkit for admins + devs
+- API, integration, and event literacy become core
+- Prompting + AI orchestration join the skill tree
+- Knowing when not to ship a UI = design skill
+Icon: lightning bolt and wrench
+
+Section 4 – Platform, not just screens
+Heading: Buying a platform, not a page layout
+- RFPs ask about events, webhooks, AI hooks
+- Lock-in hides in data models and workflows now
+- Total cost = licenses + automation engineering
+Icon: shopping cart and RFP document
+
+Section 5 – Where it can go sideways
+Heading: Where this can go wrong
+- Black-box automations nobody can explain
+- Shadow AI agents changing records quietly
+- Over-automation erodes frontline trust in CRM
+Icon: confused robot and warning gauge
+
+Section 6 – Signals to watch this year
+Heading: Signals to watch in 2026
+- Native headless SKUs from big CRM vendors
+- Marketplaces for AI agents and orchestration
+- Job posts for CRM automation / orchestration architect
+Icon: 2026 calendar and agent marketplace storefront
+
+Footer banner (lime green box, black text):
+This is the shift to watch in 2026.
+What patterns are you seeing in your own org?
+
+CRITICAL — footer must be EXACTLY the two lines above. No other CTA or newsletter text.

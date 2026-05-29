@@ -4,7 +4,7 @@ Batch pipeline: Google Sheet **Image Library** → Grok or Napkin image → resi
 
 **Script:** `linkedin_images_watcher.py` (one run, all eligible rows, then exits)
 
-**Deeper docs:** [CLAUDE.md](CLAUDE.md) section 4 · [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) (per-column input guide)
+**Deeper docs:** [CLAUDE.md](CLAUDE.md) section 4 · [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [SCRIPTS.md](SCRIPTS.md)
 
 ---
 
@@ -92,8 +92,17 @@ Column **F** chooses the generator. Empty **F** → Grok `b2b_clean`.
 | `saas_ui` | Product / CRM / dashboard (no readable text) |
 | `concept_metaphor` | One symbolic visual (use sparingly) |
 | `stats_visual` | Growth / metrics (no labels) |
+| `notebook_sketch` | Notebook sketchnote (green highlighter, sections — put outline in **H**) |
 
-Aliases: `saas`/`ui` → `saas_ui`; `professional`/`b2b` → `b2b_clean`; see `--list-styles`.
+**Notebook sketchnote (`notebook_sketch`):**
+
+- Paste your full outline in **H** (same content as `notebook_sketches\*.txt` prompt files).
+- The sheet does **not** read `.txt` files automatically — copy into **H**.
+- Letterbox fit (no crop). **E** + **I** on Drive after batch run.
+- Standalone (no Drive): [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · `python grok_notebook_sketch.py --prompt-file ...`
+- Put exact **footer** text at the **end** of **H** with a `CRITICAL — footer must be EXACTLY...` line (Grok may otherwise reuse old CTAs).
+
+Aliases: `saas`/`ui` → `saas_ui`; `sketchnote`/`notebook`/`headless_sketch` → `notebook_sketch`; see `--list-styles`.
 
 Needs: `XAI_API_KEY` only.
 
@@ -118,6 +127,15 @@ Needs: `NAPKIN_API_TOKEN` in `grokapi.env` (uses Napkin credits).
 | C | `TRUE` |
 
 Column **G** after run shows `[Napkin napkin]` plus the text sent to Napkin.
+
+### Which style for which visual?
+
+| You want | F | H |
+|----------|---|---|
+| Photo / UI / abstract | `b2b_clean`, `saas_ui`, etc. | Short art direction |
+| Hub-and-spoke / business diagram | `napkin` | Layer + node labels |
+| Notebook story page (sections + CTA) | `notebook_sketch` | Full outline (see `headless_crm_signal_prompt.txt`) |
+| MCP / platform **layer stack** diagram | `napkin_elegant` | Describe each horizontal layer and boxes |
 
 ---
 
@@ -157,6 +175,17 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 | Drive 403 / quota | Use `DRIVE_AUTH = "oauth"` + `setup_drive_oauth.py` |
 | xAI 403 | Use `requests.Session()` (already in script); check `XAI_API_KEY` |
 | Wrong image style | Run `--list-styles`; unknown Grok F → `b2b_clean` |
+| Notebook footer wrong | Exact footer at end of **H** + CRITICAL line; re-run row |
+| Prompt in `.txt` not used | Copy into column **H** for sheet batch |
+
+---
+
+## Related scripts (not sheet batch)
+
+| Script | Role |
+|--------|------|
+| `grok_notebook_sketch.py` | Local sketchnote JPG only |
+| `grok_x_query.py` | X research → `x_query_outputs/` ([GROK_X_QUERY.md](GROK_X_QUERY.md)) |
 
 ---
 
@@ -166,6 +195,8 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 |------|------|
 | `linkedin_images_watcher.py` | Main batch script |
 | `check_linkedin_setup.py` | Validate setup |
+| `check_linkedin_credentials.py` | API key + SA check only |
 | `setup_drive_oauth.py` | One-time Drive OAuth |
 | `requirements-linkedin.txt` | Python deps |
 | `grokapi.env` | Your API keys (local only) |
+| `notebook_sketches/` | Example prompts + local JPG output |

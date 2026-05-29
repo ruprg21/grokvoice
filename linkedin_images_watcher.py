@@ -154,7 +154,26 @@ STYLE_PRESETS = {
             "dark or navy background, no text."
         ),
     },
+    "notebook_sketch": {
+        "label": "Notebook sketchnote — spiral page, green highlighter, sections (outline in H)",
+    },
 }
+
+NOTEBOOK_SKETCH_VISUAL = (
+    "Tall vertical hand-drawn notebook sketchnote, lined paper, red margin line left, "
+    "black spiral binding, lime green (#00FF41) headers and highlight boxes, black body text, "
+    "alternating left-right panels with curved arrows, playful editorial style not corporate, "
+    "small robot and gear doodles, sharp legible English typography, no photorealistic people."
+)
+
+NOTEBOOK_CHAT_SYSTEM = (
+    "You write a complete image-generation prompt for a NOTEBOOK SKETCHNOTE infographic. "
+    "Include: TITLE (from the post topic), optional SUBTITLE, 4-6 SECTIONS each with a Heading "
+    "and 3 short bullet lines, optional BOTTOM CTA strip. "
+    "Output ONLY the prompt text to send to the image model (no explanation). "
+    "All section copy must appear in the prompt so it can be rendered in the image. "
+    "Keep bullets concise."
+)
 
 # Napkin AI — infographics / diagrams (column F). Requires NAPKIN_API_TOKEN in grokapi.env
 NAPKIN_API_BASE = "https://api.napkin.ai"
@@ -203,6 +222,10 @@ STYLE_ALIASES = {
     "data": "stats_visual",
     "stats": "stats_visual",
     "analytics": "stats_visual",
+    "sketchnote": "notebook_sketch",
+    "notebook": "notebook_sketch",
+    "visual_journal": "notebook_sketch",
+    "headless_sketch": "notebook_sketch",
 }
 
 # drive (not drive.file) so uploads work to folders shared with the service account
@@ -440,6 +463,64 @@ def generate_napkin_bytes(
     raise TimeoutError(f"Napkin visual timed out after {NAPKIN_POLL_MAX_WAIT}s")
 
 
+def notebook_layout_hint(fmt: str) -> str:
+    if fmt == "landscape":
+        return (
+            "Layout: wide landscape notebook spread (16:9), two-column sketchnote flow, "
+            "footer CTA strip along the bottom."
+        )
+    return "Layout: square notebook page (1:1), balanced sections, footer CTA strip."
+
+
+def build_notebook_sketch_prompt(
+    post: str,
+    direction: str,
+    fmt: str,
+    api_key: str,
+    session: requests.Session,
+) -> str:
+    """Full grok-imagine prompt for notebook sketchnote (see grok_notebook_sketch.py)."""
+    layout = notebook_layout_hint(fmt)
+    if direction.strip() and len(direction.strip()) >= 120:
+        body = direction.strip()[:12000]
+        topic = post.strip()[:800] or "LinkedIn topic"
+        return (
+            f"{NOTEBOOK_SKETCH_VISUAL}\n{layout}\n\n"
+            f"TOPIC (from LinkedIn post):\n{topic}\n\n"
+            f"PAGE CONTENT (render all headings and bullets legibly):\n{body}"
+        )
+
+    user_parts = [
+        f"LinkedIn post topic:\n{post[:2500]}",
+        layout,
+        (
+            "Create the full notebook sketchnote prompt with title, sections, bullets, "
+            "and optional footer CTA relevant to this post."
+        ),
+    ]
+    if direction.strip():
+        user_parts.insert(
+            1,
+            "Art direction (must follow):\n" + direction.strip()[:3000],
+        )
+    resp = session.post(
+        "https://api.x.ai/v1/chat/completions",
+        headers=api_headers(api_key),
+        json={
+            "model": CHAT_MODEL,
+            "messages": [
+                {"role": "system", "content": NOTEBOOK_CHAT_SYSTEM},
+                {"role": "user", "content": "\n\n".join(user_parts)},
+            ],
+            "max_tokens": 1500,
+        },
+        timeout=90,
+    )
+    resp.raise_for_status()
+    body = resp.json()["choices"][0]["message"]["content"].strip()
+    return f"{NOTEBOOK_SKETCH_VISUAL}\n{layout}\n\n{body}"
+
+
 def build_image_prompt(
     post: str,
     style_key: str,
@@ -669,11 +750,26 @@ def process_row(
             print(f"[row {row_index}] Napkin PNG: {napkin_img.size[0]}x{napkin_img.size[1]}")
             jpeg_bytes = resize_for_linkedin_fit(raw_bytes, fmt)
         else:
-            full_prompt = build_image_prompt(post, style_key, direction, api_key, session)
-            ws.update_cell(row_index, COL_IMAGE_PROMPT, full_prompt[:50000])
-            print(f"[row {row_index}] Prompt: {full_prompt[:120]}...")
-            raw_bytes = generate_image_bytes(full_prompt, fmt, api_key, session)
-            jpeg_bytes = resize_for_linkedin(raw_bytes, fmt)
+            if style_key == "notebook_sketch":
+                full_prompt = build_notebook_sketch_prompt(
+                    post, direction, fmt, api_key, session
+                )
+                ws.update_cell(
+                    row_index,
+                    COL_IMAGE_PROMPT,
+                    f"[notebook_sketch]\n{full_prompt[:50000]}",
+                )
+                print(f"[row {row_index}] Notebook prompt: {full_prompt[:120]}...")
+                raw_bytes = generate_image_bytes(full_prompt, fmt, api_key, session)
+                jpeg_bytes = resize_for_linkedin_fit(raw_bytes, fmt)
+            else:
+                full_prompt = build_image_prompt(
+                    post, style_key, direction, api_key, session
+                )
+                ws.update_cell(row_index, COL_IMAGE_PROMPT, full_prompt[:50000])
+                print(f"[row {row_index}] Prompt: {full_prompt[:120]}...")
+                raw_bytes = generate_image_bytes(full_prompt, fmt, api_key, session)
+                jpeg_bytes = resize_for_linkedin(raw_bytes, fmt)
         w, h = LINKEDIN_SIZES[fmt]
         print(f"[row {row_index}] LinkedIn output: {w}x{h}")
 

@@ -15,9 +15,9 @@ Row 1 = headers. Data starts row 2.
 | C | approved | Yes | Yes (`TRUE`) |
 | D | status | No (auto) | — |
 | E | drive_file_id | No (auto) | Must be **empty** to run |
-| F | image_style | Optional | No (default `b2b_clean`; or `napkin` for diagrams) |
+| F | image_style | Optional | No (default `b2b_clean`; `napkin` / `notebook_sketch` for diagrams / sketchnotes) |
 | G | image_prompt | No (auto) | — |
-| H | image_direction | Optional | No (recommended for `napkin`) |
+| H | image_direction | Optional | No (required for best `napkin` / `notebook_sketch`) |
 | I | drive_url | No (auto) | — (add header `drive_url` in row 1) |
 
 ---
@@ -176,8 +176,11 @@ Clear **I** with **E**, **D**, and **G** before setting C = `TRUE` again.
 | `saas_ui` | Software / product | Salesforce, CRM, dashboards, platform features |
 | `concept_metaphor` | One symbol | Abstract idea (use rarely — can feel off-brand) |
 | `stats_visual` | Metrics / growth | ROI, scale, analytics, performance |
+| `notebook_sketch` | Notebook sketchnote | Dense visual summary: paste section outline in **H** (title, 4–6 sections, bullets, CTA) |
 
 ### Aliases (also work)
+
+`sketchnote` / `notebook` / `visual_journal` / `headless_sketch` → `notebook_sketch`
 
 `professional`, `b2b`, `clean` → `b2b_clean`  
 `corporate`, `photo`, `workplace` → `executive_photo`  
@@ -196,6 +199,7 @@ python linkedin_images_watcher.py --list-styles
 | Post type | F |
 |-----------|---|
 | Ecosystem / process diagram | `napkin` |
+| Headless CRM / newsletter sketchnote | `notebook_sketch` + full outline in **H** |
 | Salesforce product post | `saas_ui` |
 | CEO / culture post | `executive_photo` |
 | Webinar announcement | `gradient_abstract` or `b2b_clean` |
@@ -206,6 +210,20 @@ python linkedin_images_watcher.py --list-styles
 
 - Random words → falls back to `b2b_clean`
 - `concept_metaphor` for every post → often too abstract for LinkedIn
+
+### Notebook sketchnote (`notebook_sketch`)
+
+Uses **Grok Imagine** (not Napkin). Best when **H** contains the full page outline:
+
+- Title + subtitle
+- Numbered sections with headings and bullets
+- Footer CTA (repeat exact lines at the **end** of **H** with a `CRITICAL` footer block)
+
+**Does not read** `notebook_sketches\*.txt` from disk — paste that file into **H**.
+
+After run: JPEG on Drive, **I** = view link, **G** = `[notebook_sketch]` + full prompt.
+
+See [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md).
 
 ### Napkin styles (infographics — uses Napkin API, not Grok)
 
@@ -246,7 +264,7 @@ Column **G** will show `[Napkin napkin]` plus the text sent to Napkin.
 
 ## Column H — `image_direction`
 
-**What it is:** Optional **per-post** visual brief (1–2 sentences): what should appear in the picture.
+**What it is:** Optional **per-post** visual brief. For most Grok photo styles: 1–2 sentences. For **`notebook_sketch`** or **`napkin`**: can be a **full outline** (sections, bullets, footer).
 
 **What it is NOT:**
 

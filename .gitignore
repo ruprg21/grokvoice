@@ -23,6 +23,14 @@ __pycache__/
 # Image output folders
 script1_images/
 
+# Grok X query text outputs
+x_query_outputs/
+
+# Grok notebook sketch outputs (keep prompt templates in git)
+notebook_sketches/*.jpg
+notebook_sketches/*.jpeg
+notebook_sketches/*.png
+
 # Script/data folders (content files, not code)
 script naval chola - audio , images and video/
 voice and image prompts/
