@@ -88,4 +88,4 @@ Each run invokes **x_search** (tool pricing on top of tokens). See [xAI pricing]
 - [CLAUDE.md](CLAUDE.md) section 5 — summary in master doc
 - [xAI X Search tool](https://docs.x.ai/developers/tools/x-search)
 
-Not used by LinkedIn image batch or `grok_notebook_sketch.py`.
+Not used by LinkedIn image batch, `grok_notebook_sketch.py`, `grok_infographic.py`, or `napkin_infographic.py`.

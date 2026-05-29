@@ -1,0 +1,105 @@
+THE FUTURE OF
+SALESFORCE DATA
+SALESFORCE DATA CLOUD:
+UNIFIED CUSTOMER DATA
+POWERED BY AI + REAL-TIME SIGNALS
+
+A new way to know your customer. Data Cloud connects every data source 
+into a single, real-time customer profile — eliminating silos, powering 
+AI, and making every Salesforce app smarter automatically.
+
+SALESFORCE DATA CLOUD
+
+SYSTEM OF IDENTITY | SYSTEM OF INTELLIGENCE | SYSTEM OF ACTION | SYSTEM OF ENGAGEMENT
+Data Cloud          | Einstein AI             | Flow + Agentforce | Sales, Service, Marketing Cloud
+One unified profile | Predictions, scoring    | Act on the signal | Every app gets
+per customer        | & segmentation          | instantly         | smarter data
+
+</> Connect any data source through APIs, connectors & streaming —
+Less dependency on manual data entry and batch syncs.
+
+────────────────────────────────────────────────────────
+KEY INNOVATIONS THAT CHANGE THE GAME
+────────────────────────────────────────────────────────
+
+DATA STREAMS & CONNECTORS
+Connect web, mobile, CRM, ERP, and offline data in real time.
+250+ prebuilt connectors available.
+
+UNIFIED PROFILES & IDENTITY RESOLUTION
+Merge duplicate records across channels into one golden record
+automatically.
+
+CALCULATED INSIGHTS
+Build real-time segments, scores, and metrics on top of live data.
+No ETL required.
+
+DATA ACTIONS & ACTIVATION
+Push signals directly into Flow, Agentforce, or any Salesforce app
+automatically.
+
+────────────────────────────────────────────────────────
+BEFORE vs AFTER
+AI + DATA CLOUD + UNIFIED WORKFLOWS
+────────────────────────────────────────────────────────
+
+THE OLD WAY (SILOED)          THE NEW WAY (DATA CLOUD)
+✗ Customer data split         ✓ One real-time profile
+  across 5+ systems             per customer
+✗ Marketing sees different    ✓ Every team works from
+  data than Service             the same record
+✗ Batch syncs mean            ✓ Streaming data updated
+  stale profiles                in minutes
+✗ Duplicate records           ✓ Identity resolution merges
+  nobody trusts                 duplicates automatically
+✗ Segments built on           ✓ Segments built on live
+  last month's data             behavioral signals
+✗ AI models trained on        ✓ Einstein and Agentforce
+  incomplete data               trained on complete data
+✗ Manual exports to           ✓ Activation happens inside
+  activate any insight          Salesforce — no exports
+
+TIME SAVINGS
+DAYS TO SEGMENT
+↓
+MINUTES
+Faster campaign activation & response
+
+────────────────────────────────────────────────────────
+HOW IT WORKS TOGETHER
+────────────────────────────────────────────────────────
+
+Data Sources → Data Streams → Unified Profile & Identity Resolution
+→ Calculated Insights → Agentforce + Flow → Salesforce Org
+
+Ingest → Unify → Enrich → Segment → Act | Know your customer. Every time.
+
+────────────────────────────────────────────────────────
+KEY TAKEAWAYS               TECH STACK
+────────────────────────────────────────────────────────
+
+✓ Data Cloud is the         Data Cloud          Latest    ✅ Active
+  data layer every          Salesforce CLI       v2.131+   ✅ Active
+  Salesforce AI runs on.    Einstein Studio      Latest    ✅ Connected
+                            Data Streams         250+      ✅ Ready
+✓ Identity resolution       Identity Resolution  Built-in  ✅ Live
+  is where the real
+  value hides — one
+  profile per human,
+  not per record.
+
+✓ Calculated Insights
+  replace most manual
+  reporting logic.
+
+✓ The future is
+  real-time signals,
+  not nightly batch
+  syncs.
+
+✓ Without Data Cloud,
+  Agentforce is working
+  with incomplete context.
+
+"We are not just storing customer data.
+We are finally understanding it."

@@ -6,7 +6,7 @@ Batch pipeline: Google Sheet **Image Library** → Grok or Napkin image → resi
 
 **GitHub:** Developed on branch `linkedin-grok` ([ruprg21/grokvoice](https://github.com/ruprg21/grokvoice)). YouTube/Chola scripts remain on `main`.
 
-**Master doc:** [CLAUDE.md](CLAUDE.md) section 4 · **Columns:** [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · **Sketchnote:** [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · **All commands:** [SCRIPTS.md](SCRIPTS.md)
+**Master doc:** [CLAUDE.md](CLAUDE.md) section 4 · **Columns:** [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) · **Sketchnote:** [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · **Infographic:** [INFOGRAPHIC.md](INFOGRAPHIC.md) · **All commands:** [SCRIPTS.md](SCRIPTS.md)
 
 ---
 
@@ -140,6 +140,63 @@ Column **G** after run shows `[Napkin napkin]` plus the text sent to Napkin.
 | Hub-and-spoke / business diagram | `napkin` | Layer + node labels |
 | Notebook story page (sections + CTA) | `notebook_sketch` | Full outline (see `headless_crm_signal_prompt.txt`) |
 | MCP / platform **layer stack** diagram | `napkin_elegant` | Describe each horizontal layer and boxes |
+| **Dense B2B SaaS one-pager** (see below) | `napkin_elegant` or `napkin` | Full section list in **H** |
+
+---
+
+## B2B SaaS technical infographic (dense one-pager)
+
+**What people call it:** B2B SaaS technical infographic, product marketing one-pager, solution overview graphic, DX (developer experience) marketing visual, or LinkedIn “save-worthy” explainer.
+
+**What it looks like:** Vertical, information-dense layout — dark navy header band, flat two-tone icons, color-coded pillar cards, feature grid, **before vs after** comparison (red X vs green checkmarks), horizontal **workflow arrow** strip, key takeaways, optional tech-stack table, quote/CTA footer. Corporate flat design — **not** hand-drawn notebook (`notebook_sketch`) and **not** a single photo.
+
+**Example use case:** Salesforce Headless 360 + MCP + Agentforce cheat sheet (header, four systems, innovations grid, old/new workflow, time-savings metric, “how it works together” flow, stack table).
+
+### Sheet settings
+
+| Col | Recommendation |
+|-----|----------------|
+| **F** | `napkin_elegant` (first choice) or `napkin` |
+| **H** | Structured brief — list every block Napkin should draw (see template below) |
+| **B** | `landscape` (1200 x 627) |
+| **A** | Normal LinkedIn caption (not the layout spec) |
+
+**Avoid for this layout:** `notebook_sketch` (lined paper / lime green), `concept_metaphor` (one symbol only), empty **F** with only vague **H** (falls back to generic `b2b_clean` photo art).
+
+**Local test (no sheet):** Prefer **`grok_infographic.py`** for dense labeled layouts; **`napkin_infographic.py`** for simpler diagrams. See [INFOGRAPHIC.md](INFOGRAPHIC.md).
+
+**Sheet batch:** `saas_ui` + long **H** uses grok-3 prompt builder (less control than `grok_infographic.py`). Napkin via F = `napkin` / `napkin_elegant` + structured **H**.
+
+### H brief template (paste into column H)
+
+```
+B2B SaaS technical infographic, portrait-friendly vertical layout, flat corporate icons, navy header.
+
+HEADER: [title] + [subtitle]. Logo area: [brand].
+
+ROW 1 — Four pillars (color-coded circles): [System 1 name + one line], [System 2], [System 3], [System 4].
+
+SECTION — Key innovations: 4 cards with icons — [card 1], [card 2], [card 3], [card 4 including MCP/tools if relevant].
+
+COMPARISON — Left column red header "The Old Way": bullet list with X icons. Right column green header "The New Way": bullet list with checkmarks. Side metric: [e.g. 3-4 hours down to under 10 minutes].
+
+FLOW — Horizontal arrows: [step1] -> [step2] -> [step3] -> ... -> [final step].
+
+FOOTER — Key takeaways (3-5 bullets). Optional tech stack table: columns Tool, Version, Status. Bottom quote: "[exact CTA line]".
+
+Style: clean sans-serif, high contrast, no photorealistic people, readable labels on all boxes.
+```
+
+Shorten or expand blocks to match your post; Napkin works best when **H** names sections and labels explicitly.
+
+### vs other styles
+
+| Style | Genre |
+|-------|--------|
+| **SaaS technical infographic** (this section) | Flat corporate infographic, dense text + diagrams |
+| `notebook_sketch` | Hand-drawn notebook page — [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) |
+| `saas_ui` (Grok) | Product photo / blurred UI mock — not a labeled cheat sheet |
+| `b2b_clean` | Single marketing scene — not multi-section layout |
 
 ---
 
@@ -195,7 +252,9 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 
 | Script | Role |
 |--------|------|
-| `grok_notebook_sketch.py` | Local sketchnote JPG only |
+| `grok_notebook_sketch.py` | Local notebook sketchnote JPG — [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) |
+| `grok_infographic.py` | Local B2B SaaS one-pager (Grok Imagine) — [INFOGRAPHIC.md](INFOGRAPHIC.md) |
+| `napkin_infographic.py` | Local infographic / diagram (Napkin API) — [INFOGRAPHIC.md](INFOGRAPHIC.md) |
 | `grok_x_query.py` | X research → `x_query_outputs/` ([GROK_X_QUERY.md](GROK_X_QUERY.md)) |
 
 ---
@@ -210,5 +269,10 @@ DRIVE_AUTH = "oauth"       # personal Gmail (recommended)
 | `setup_drive_oauth.py` | One-time Drive OAuth |
 | `requirements-linkedin.txt` | Python deps |
 | `grokapi.env` | Your API keys (local only) |
+| `grok_notebook_sketch.py` | Standalone sketchnote generator |
+| `grok_infographic.py` | Standalone B2B infographic (Grok) |
+| `napkin_infographic.py` | Standalone B2B infographic (Napkin) |
 | `notebook_sketches/headless_crm_signal_prompt.txt` | Sketchnote prompt template (in git) |
-| `notebook_sketches/*.jpg` | Local JPG output (gitignored) |
+| `notebook_sketches/*.jpg` | Sketchnote JPG output (gitignored) |
+| `infographic/info_script.txt` | SaaS one-pager example prompt (in git) |
+| `infographic/*.jpg` | Infographic JPG output (gitignored) |

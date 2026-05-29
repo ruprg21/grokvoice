@@ -30,6 +30,9 @@ x_query_outputs/
 notebook_sketches/*.jpg
 notebook_sketches/*.jpeg
 notebook_sketches/*.png
+infographic/*.jpg
+infographic/*.jpeg
+infographic/*.png
 
 # Script/data folders (content files, not code)
 script naval chola - audio , images and video/

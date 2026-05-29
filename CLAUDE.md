@@ -13,11 +13,12 @@ This repo holds **multiple workflows**. They share `grokapi.env` / `XAI_API_KEY`
 | **Chronicles of Indus — YouTube** | `main` | `generate*.py`, `images_from_prompts.py`, `videos_from_prompts.py`, `watcher.py` | MP3, JPG, MP4 in project folders |
 | **LinkedIn images** | `linkedin-grok` | `linkedin_images_watcher.py`, `setup_drive_oauth.py` | JPEG on Google Drive + sheet columns E, I, G |
 | **Notebook sketchnote** | `linkedin-grok` | `grok_notebook_sketch.py` | Local JPG in `notebook_sketches/` |
+| **B2B SaaS infographic** | `linkedin-grok` | `grok_infographic.py`, `napkin_infographic.py` | Local JPG in `infographic/` |
 | **X (Twitter) research** | `linkedin-grok` | `grok_x_query.py` | `.txt` reports in `x_query_outputs/` |
 
-**Quick doc index:** [SCRIPTS.md](SCRIPTS.md) (all commands) · §§1–3 YouTube · §4 LinkedIn · §5 X search · §6 notebook · [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [GROK_X_QUERY.md](GROK_X_QUERY.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md)
+**Quick doc index:** [SCRIPTS.md](SCRIPTS.md) (all commands) · §§1–3 YouTube · §4 LinkedIn · §5 X search · §6 notebook · §7 infographic · [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [INFOGRAPHIC.md](INFOGRAPHIC.md) · [GROK_X_QUERY.md](GROK_X_QUERY.md)
 
-**Prompt template (git):** `notebook_sketches/headless_crm_signal_prompt.txt` — style block + section copy for sketchnotes.
+**Prompt templates (git):** `notebook_sketches/headless_crm_signal_prompt.txt` (sketchnote) · `infographic/info_script.txt` (SaaS one-pager)
 
 ## Platform
 - **Python 3.14** — all scripts use Python (Node.js not installed)
@@ -42,6 +43,8 @@ This repo holds **multiple workflows**. They share `grokapi.env` / `XAI_API_KEY`
 | `check_linkedin_setup.py` | Verify sheet + Drive + API setup | `python check_linkedin_setup.py` |
 | `check_linkedin_credentials.py` | Light check (API key + service account only) | `python check_linkedin_credentials.py` |
 | `grok_notebook_sketch.py` | Notebook sketchnote JPG (standalone, no sheet) | `python grok_notebook_sketch.py --prompt-file notebook_sketches\prompt.txt` |
+| `grok_infographic.py` | B2B SaaS one-pager via Grok Imagine (standalone) | `python grok_infographic.py --prompt-file infographic\info_script.txt --aspect landscape` |
+| `napkin_infographic.py` | B2B SaaS / diagram via Napkin API (standalone) | `python napkin_infographic.py --prompt-file infographic\info_script.txt --style napkin` |
 | `grok_x_query.py` | X sentiment / research via Grok `x_search` | `python grok_x_query.py "Your question"` |
 
 **All scripts:** [SCRIPTS.md](SCRIPTS.md)
@@ -189,6 +192,8 @@ For each approved row on tab **Image Library** (engine chosen by column **F**):
 
 Standalone test (no sheet): `python grok_notebook_sketch.py --prompt-file notebook_sketches\your_prompt.txt`
 
+**B2B SaaS infographic** (local, not a sheet style key): `grok_infographic.py` / `napkin_infographic.py` — see §7 and [INFOGRAPHIC.md](INFOGRAPHIC.md).
+
 ### Google Sheet columns (row 1 = headers)
 
 | Col | Field | You fill? | Description |
@@ -274,6 +279,8 @@ Requires `NAPKIN_API_TOKEN` in `grokapi.env` (from app.napkin.ai → Account →
 **Headless CRM sketchnote:** F = `notebook_sketch`, H = full section outline (title, 6 sections, footer). Put exact footer at end of **H** with `CRITICAL` line to avoid wrong CTA text.
 
 **Layered architecture diagram** (MCP stack, platform layers): use `napkin_elegant` + **H** describing each layer; not `notebook_sketch`.
+
+**B2B SaaS technical infographic** (dense one-pager: header, pillar cards, before/after comparison, workflow strip, stack table — flat corporate style, not notebook): also `napkin_elegant` or `napkin` with a **full structured H** (section list + labels). Not `notebook_sketch`. See [LINKEDIN_IMAGES.md — B2B SaaS technical infographic](LINKEDIN_IMAGES.md#b2b-saas-technical-infographic-dense-one-pager).
 
 ### LinkedIn output sizes
 
@@ -392,6 +399,30 @@ python grok_notebook_sketch.py --prompt-file notebook_sketches\my_prompt.txt --a
 
 ---
 
+## 7. B2B SaaS infographic — standalone JPG
+
+Two local-only scripts (no sheet). Prefer **`grok_infographic.py`** for dense labeled one-pagers; use **`napkin_infographic.py`** for simpler Napkin diagrams.
+
+```powershell
+python grok_infographic.py --prompt-file infographic\info_script.txt --aspect landscape
+python napkin_infographic.py --prompt-file infographic\info_script.txt --style napkin --format landscape
+```
+
+| Script | API key | Model / API |
+|--------|---------|-------------|
+| `grok_infographic.py` | `XAI_API_KEY` | `grok-imagine-image-quality`, aspect `16:9` default |
+| `napkin_infographic.py` | `NAPKIN_API_TOKEN` | Napkin `/v1/visual`, letterbox to LinkedIn size |
+
+| Item | Notes |
+|------|--------|
+| Prompt file | `infographic/info_script.txt` — layout blocks + copy; script prepends B2B style prefix |
+| Output JPG | `infographic/*.jpg` (gitignored) |
+| Sheet + Drive | Paste prompt into **H**; F = `napkin` / `napkin_elegant` or long **H** with `saas_ui` — see §4 |
+
+**Docs:** [INFOGRAPHIC.md](INFOGRAPHIC.md) · [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md#b2b-saas-technical-infographic-dense-one-pager)
+
+---
+
 ## Folder Structure
 
 ```
@@ -411,13 +442,19 @@ Grok Voice api/
   LINKEDIN_IMAGES.md           # LinkedIn pipeline quick start
   LINKEDIN_SHEET_COLUMNS.md    # per-column input guide
   NOTEBOOK_SKETCH.md           # notebook sketchnote style
+  INFOGRAPHIC.md               # B2B SaaS one-pager (grok + napkin standalone)
   GROK_X_QUERY.md              # X search CLI
   SCRIPTS.md                   # all run commands in one place
   grok_notebook_sketch.py      # standalone sketchnote JPG
-  grok_x_query.py                # X research via x_search
+  grok_infographic.py          # standalone B2B infographic (Grok)
+  napkin_infographic.py        # standalone B2B infographic (Napkin)
+  grok_x_query.py              # X research via x_search
 
   notebook_sketches/
     headless_crm_signal_prompt.txt  # sketchnote template (in git)
+    *.jpg                        # generated JPGs (gitignored)
+  infographic/
+    info_script.txt              # SaaS one-pager example (in git)
     *.jpg                        # generated JPGs (gitignored)
   x_query_outputs/             # X research txt output (gitignored)
   .env.example                 # key names template (no secrets)
@@ -459,6 +496,10 @@ python linkedin_images_watcher.py --list-styles
 
 # Notebook sketchnote (local) — see section 6
 python grok_notebook_sketch.py --prompt-file notebook_sketches\headless_crm_signal_prompt.txt
+
+# B2B SaaS infographic (local) — see section 7
+python grok_infographic.py --prompt-file infographic\info_script.txt --aspect landscape
+python napkin_infographic.py --prompt-file infographic\info_script.txt --style napkin --format landscape
 
 # X research — see section 5
 python grok_x_query.py "CRM sentiment on X this week"

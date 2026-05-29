@@ -4,7 +4,7 @@ Tab: **Image Library** (see [CLAUDE.md](CLAUDE.md) section 4 for full setup).
 
 Row 1 = headers. Data starts row 2.
 
-**Related:** [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [SCRIPTS.md](SCRIPTS.md) · Prompt template: `notebook_sketches/headless_crm_signal_prompt.txt`
+**Related:** [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md) · [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) · [INFOGRAPHIC.md](INFOGRAPHIC.md) · [SCRIPTS.md](SCRIPTS.md) · Templates: `notebook_sketches/headless_crm_signal_prompt.txt` · `infographic/info_script.txt`
 
 ---
 
@@ -213,6 +213,7 @@ python linkedin_images_watcher.py --list-styles
 | Post type | F |
 |-----------|---|
 | Ecosystem / process diagram | `napkin` |
+| Dense SaaS cheat sheet (before/after, flow, stack table) | `napkin_elegant` + structured **H** — [LINKEDIN_IMAGES.md](LINKEDIN_IMAGES.md#b2b-saas-technical-infographic-dense-one-pager) |
 | Headless CRM / newsletter sketchnote | `notebook_sketch` + full outline in **H** |
 | Salesforce product post | `saas_ui` |
 | CEO / culture post | `executive_photo` |
@@ -238,6 +239,20 @@ Uses **Grok Imagine** (not Napkin). Best when **H** contains the full page outli
 After run: JPEG on Drive, **I** = view link, **G** = `[notebook_sketch]` + full prompt.
 
 See [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md).
+
+### B2B SaaS technical infographic (dense one-pager)
+
+Flat corporate layout: navy header, icon pillars, feature cards, red/green before-after columns, horizontal workflow arrows, takeaways, optional tech table. **Not** `notebook_sketch`.
+
+| Col | Value |
+|-----|--------|
+| **F** | `napkin_elegant` (or `napkin`) |
+| **H** | List every section and label (header, pillars, comparison bullets, flow steps, footer CTA) |
+| **B** | `landscape` |
+
+Full naming guide and **H** template: [LINKEDIN_IMAGES.md — B2B SaaS technical infographic](LINKEDIN_IMAGES.md#b2b-saas-technical-infographic-dense-one-pager).
+
+**Local test before sheet run:** `python grok_infographic.py --prompt-file infographic\info_script.txt` or `python napkin_infographic.py ...` — see [INFOGRAPHIC.md](INFOGRAPHIC.md).
 
 ### Napkin styles (infographics — uses Napkin API, not Grok)
 

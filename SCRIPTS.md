@@ -13,6 +13,7 @@ cd "c:\Users\rupesh\OneDrive\Idea AI Perplx , Cursor\Chronincles of indus\Grok V
 | Full API reference | [CLAUDE.md](CLAUDE.md) |
 | LinkedIn sheet columns | [LINKEDIN_SHEET_COLUMNS.md](LINKEDIN_SHEET_COLUMNS.md) |
 | Sketchnote prompts | [NOTEBOOK_SKETCH.md](NOTEBOOK_SKETCH.md) |
+| B2B SaaS infographic | [INFOGRAPHIC.md](INFOGRAPHIC.md) |
 
 ---
 
@@ -71,6 +72,17 @@ Template in git: `notebook_sketches/headless_crm_signal_prompt.txt`. Details: [N
 
 ---
 
+## B2B SaaS infographic (local JPG, no sheet)
+
+| Script | Command |
+|--------|---------|
+| `grok_infographic.py` | `python grok_infographic.py --prompt-file infographic\info_script.txt --aspect landscape` |
+| `napkin_infographic.py` | `python napkin_infographic.py --prompt-file infographic\info_script.txt --style napkin --format landscape` |
+
+Example prompt: `infographic/info_script.txt`. Details: [INFOGRAPHIC.md](INFOGRAPHIC.md)
+
+---
+
 ## X (Twitter) research — Grok `x_search`
 
 | Script | Command |
@@ -90,7 +102,9 @@ Details: [GROK_X_QUERY.md](GROK_X_QUERY.md)
 | Path | In git? | Contents |
 |------|---------|----------|
 | `notebook_sketches/*.jpg` | No (gitignored) | Sketchnote JPGs |
-| `notebook_sketches/*_prompt.txt` | Yes | Prompt templates |
+| `notebook_sketches/*_prompt.txt` | Yes | Sketchnote prompt templates |
+| `infographic/*.txt` | Yes | Infographic prompt scripts |
+| `infographic/*.jpg` | No (gitignored) | Infographic JPGs from `grok_infographic.py` / `napkin_infographic.py` |
 | `x_query_outputs/` | No (gitignored) | X research `.txt` reports |
 | Drive folder in script | — | LinkedIn JPEGs from sheet batch |
 
